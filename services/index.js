@@ -15,7 +15,7 @@ require('dotenv').config()
  * @returns {Promise<Object>} O resultado da query.
  */
 async function executarSQL(sql, params = []) {
-    // O Pool gerencia a abertura e o fechamento das conexões automaticamente a partir das variáveis de ambient
+    // O Pool gerencia a abertura e o fechamento das conexões automaticamente a partir das variáveis de ambiente
     
     const pool = new Pool({
         connectionString: process.env.DATABASE_URL,

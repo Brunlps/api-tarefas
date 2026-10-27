@@ -9,7 +9,7 @@ app.get("/", (req, res) => {
 app.get("/usuarios", async (req, res) => {
     try {
         const linhas = await executarSQL("SELECT * FROM usuarios;");
-        res.json(linhas);
+        res.json(linhas.rows);
     } catch (error) {
         res.json({
             mensagem: error.message

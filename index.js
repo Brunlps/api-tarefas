@@ -1,7 +1,6 @@
 const express = require("express");
 const executarSQL = require("./services");
 const cors = require("cors");
-const bcrypt = require("bcrypt");
 
 const app = express();
 
@@ -65,12 +64,11 @@ app.post("/usuarios", async (req, res) => {
             });
         }
 
-        const hash = await bcrypt.hash(senha, 10)
         const query = await executarSQL(
             `INSERT INTO usuarios(nome, email, senha) 
             VALUES ($1, $2, $3) 
             RETURNING id, nome, email;`,
-            [nome, email, hash]);
+            [nome, email, senha]);
 
         return res.status(201).json({
             tipo: "success",
@@ -108,13 +106,12 @@ app.put("/usuarios/:id", async (req, res) => {
             });
         }
 
-        const hash = await bcrypt.hash(senha, 10);
         const query = await executarSQL(
             `UPDATE usuarios
             SET nome=$1, email=$2, senha=$3
             WHERE id = $4
             RETURNING id, nome, email;`,
-            [nome, email, hash, id]);
+            [nome, email, senha, id]);
 
         if (query.rowCount === 0) {
             return res.status(404).json({
@@ -189,7 +186,7 @@ app.post("/login", async (req, res) => {
 
         const usuario = query.rows[0];
 
-        if (!usuario || !(await bcrypt.compare(senha, usuario.senha))) {
+        if (!usuario || usuario.senha !== senha) {
             return res.status(401).json({
                 tipo: "warning",
                 mensagem: "Email ou senha inválidos."
